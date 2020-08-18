@@ -1,0 +1,15 @@
+Metadata-Version: 1.1
+Name: lxml2dict
+Version: 0.0.2
+Summary: Convert lxml tree to python dict format with flexible namespace support.
+Home-page: https://github.com/myrfy001/lxml2dict
+Author: myrfy001
+Author-email: UNKNOWN
+License: Apache
+Description: Convert lxml tree to python dict format with flexible namespace support. Use loop structure instead of recursive structure to achieve a higher speed.
+Keywords: lxml dict json
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python :: 3.6
