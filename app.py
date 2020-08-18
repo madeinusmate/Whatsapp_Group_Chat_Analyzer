@@ -291,18 +291,6 @@ else:
                 @st.cache
                 def generate_stopwords():
                     stopwords_ita = set(get_stop_words('italian'))
-                    stopwords_ita = list(stopwords_ita)
-                    stopwords = []
-                    stopwords_ita_path = "/Users/stefano/PycharmProjects/Whatsapp_Group_Chat_Analyzer/stopwords.txt"
-                    with open(stopwords_ita_path, encoding="utf-8") as fp:
-                        while True:
-                            line = fp.readline()
-                            if not line:
-                                break
-                            line = line.strip()
-                            stopwords_ita.append(line)
-
-                    stopwords_ita = set(stopwords_ita)
 
                     stopwords_eng = set(get_stop_words('english'))
 
