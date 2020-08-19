@@ -45,7 +45,7 @@ else:
     line=chat_file.readline()
     line=line.strip()
     if (Services.startsWithDateAndTimeAndroid(line)==False) and (Services.startsWithDateAndTimeios(line)==False):
-        st.subheader("Warning: The file provided is not correct!")
+        st.subheader("Warning: The file provided is not correct!⚠️")
         st.write("Please follow the instruction located in the sidebar to extract your Whatsapp chat export from the app and upload the correct file.")
 
     else:
@@ -144,10 +144,10 @@ else:
         chat_language=st.sidebar.selectbox("What's your chat language?", ("-","Italian", "English"))
         chat_name=st.sidebar.text_input("What's your chat Name?", "")
         if chat_language=="-":
-            st.subheader("Warning: Chat Language Missing")
+            st.subheader("⚠️ Warning: Chat Language Missing. ⚠️")
             st.write("Please select the language of your chat in the sidebar")
         if chat_name=="":
-            st.subheader("Warning: Chat Name Missing")
+            st.subheader("⚠️ Warning: Chat Name Missing. ⚠️")
             st.write("Please type the name of your chat in the sidebar")
         else:
             st.title(chat_name + " - Chat Analysis")
@@ -202,7 +202,7 @@ else:
             st.markdown("---")
 
             if req_df.shape[0]== 0:
-                st.subheader("Warning")
+                st.subheader("⚠️ Warning ⚠️")
                 st.markdown("No messages have been sent in the selected timeframe. Please change the analysis timeframe using the slider above ⏱")
             else:
 
@@ -758,7 +758,7 @@ st.sidebar.text('Follow the steps 👇:')
 st.sidebar.text('1) Open the individual or group chat.')
 st.sidebar.text('2) Tap options > More > Export chat.')
 st.sidebar.text('3) Choose export without media.')
-st.sidebar.markdown('*You are all set to go 😃*.')
+st.sidebar.text('4) Unzip the file and you are all set to go 😃.')
 st.sidebar.markdown('**What happens to my data?**')
 st.sidebar.markdown('The data you upload is not saved anywhere on this site or any 3rd party site i.e, not in any storage like DB/FileSystem/Logs.')
 st.sidebar.markdown('**What mobile OS are supported?**')

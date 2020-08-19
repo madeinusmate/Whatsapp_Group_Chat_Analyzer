@@ -46,7 +46,7 @@ class Services:
         dateTime = splitLine[0]
         date, time = dateTime.split(', ')
         message = ' '.join(splitLine[1:])
-        if FindAuthor(message):
+        if Services.FindAuthor(message):
             splitMessage = message.split(':')
             author = splitMessage[0]
             message = ' '.join(splitMessage[1:])
