@@ -54,7 +54,7 @@ else:
         def transform_data(chat_file):
             URLPATTERN = r'(https?://\S+)'
 
-            parsedData = []  # List to keep track of data so it can be used by a Pandas dataframe
+            parsedData = []
 
             device = ''
             first = chat_file.readline()
@@ -106,7 +106,7 @@ else:
                 URLPATTERN = r'(https?://\S+)'
                 df['urlcount'] = df.Message.apply(lambda x: re.findall(URLPATTERN, x)).str.len()
             else:
-                df = pd.DataFrame(parsedData, columns=['Date', 'Time', 'Author', 'Message'])  # Initialising a pandas Dataframe.
+                df = pd.DataFrame(parsedData, columns=['Date', 'Time', 'Author', 'Message'])
                 df = df.dropna()
                 df["Date"] = df["Date"].apply(Services.dateconv)
                 df["Date"] = pd.to_datetime(df["Date"], format='%Y-%m-%d')
@@ -270,7 +270,10 @@ else:
                                 "inverse" : "true",
                                 "data": members_breakdown_df["Author"].values.tolist(),
                                 "axisPointer": {"type": "shadow"},
-                                "show": "false",
+                                "show": "true",
+                                "axisLabel": {
+                                    "interval": 0
+                                },
                             },
                         ],
                         "series": [
@@ -284,7 +287,7 @@ else:
                         ],
                     }
                     st.markdown("---")
-                    st_echarts(members_breakdown_options, width="700px", height="500px")
+                    st_echarts(members_breakdown_options)
 
                 #WORDCLOUD
 
@@ -375,7 +378,7 @@ else:
                     ],
                 }
                 st.markdown("---")
-                st_echarts(timeline_options, width="700px", height="500px")
+                st_echarts(timeline_options)
 
 
                 #Media breakdown
@@ -434,12 +437,10 @@ else:
                     ],
                 }
                 st.markdown("---")
-                st_echarts(media_breakdown_options, width="700px", height="500px")
+                st_echarts(media_breakdown_options)
 
 
-                # fig_media = px.pie(media_piechart_df, values='Count', names='Media Type',title="Media Breakdown")
-                # fig_media.update_traces(textposition='outside', textinfo='percent+label', )
-                # st.plotly_chart(fig_media)
+
 
                 #Emoji Breakdown
 
@@ -466,6 +467,9 @@ else:
                         "type": "category",
                         "data": emoji_df["Emoji"].values.tolist(),
                         "axisPointer": {"type": "shadow"},
+                        "axisLabel": {
+                                "interval": 0
+                            },
                         },
                     ],
                     "yAxis": [
@@ -485,7 +489,7 @@ else:
                     ],
                 }
                 st.markdown("---")
-                st_echarts(emoji_options, width="700px", height="500px")
+                st_echarts(emoji_options)
 
 
                 #RADAR - Activity by Time of the Day
@@ -564,7 +568,7 @@ else:
                     "legend": {
                         "data": ['Messages Sent'],
                         "left": "left",
-                        "top": "15%",
+                        "top": "7%",
                         "type" : "plain",
                         "orient" : "vertical",
                     },
@@ -646,7 +650,7 @@ else:
                 }
                 st.markdown("---")
 
-                st_echarts(option_radar_message,width="700px", height="500px")
+                st_echarts(option_radar_message)
 
                 option_radar_media= {
 
@@ -660,7 +664,7 @@ else:
                     "legend": {
                         "data": ['Media Sent'],
                         "left": "left",
-                        "top": "15%",
+                        "top": "7%",
                         "type" : "plain",
                         "orient" : "vertical",
                     },
@@ -742,7 +746,7 @@ else:
                 ],
                 }
 
-                st_echarts(option_radar_media,width="700px", height="500px")
+                st_echarts(option_radar_media)
 
 
 st.sidebar.markdown("---")
