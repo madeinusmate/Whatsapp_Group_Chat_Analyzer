@@ -137,9 +137,9 @@ else:
             Members=Members.sort_values("new").reset_index(drop='True').drop('new', axis=1)
             l = Members.Author.unique()
 
-            return l, Members, messages_df, media_messages_df, total_messages, media_messages, emojis, links
+            return l, Members, messages_df, media_messages_df, total_messages, media_messages, emojis, links, device
 
-        l, Members, messages_df, media_messages_df, total_messages, media_messages, emojis, links=transform_data(chat_file)
+        l, Members, messages_df, media_messages_df, total_messages, media_messages, emojis, links, device=transform_data(chat_file)
 
         chat_language=st.sidebar.selectbox("What's your chat language?", ("-","Italian", "English"))
         chat_name=st.sidebar.text_input("What's your chat Name?", "")
@@ -214,15 +214,13 @@ else:
                 active_days=req_df["Date"].unique().shape[0]
                 avg_message_per_day=int((req_df.shape[0]/active_days))
                 most_active_day=req_df["Date"].value_counts().reset_index().iloc[0,0]
-                most_active_day =str(most_active_day)
-                most_active_day =most_active_day.replace(" 00:00:00","")
+                most_active_day =pd.Series(most_active_day)
+                most_active_day=most_active_day.dt.strftime("%A %d %B %Y")
 
                 st.subheader('Total Messages Sent: '+ str(req_df.shape[0]))
-
                 st.subheader('Total Words Sent; ' + str(np.sum(req_df['Word_Count'])))
                 st.subheader('Total Letters Sent; '+ str(np.sum(req_df['Letter_Count'])))
-
-                st.subheader('Most Active Day: '+str(most_active_day))
+                st.subheader('Most Active Day: '+ str(most_active_day[0]))
                 st.subheader('Media Sent: '+ str(media.shape[0]))
                 st.subheader('Emojis Sent: '+ str(emojis))
                 st.subheader('Links Sent: '+ str(links))
@@ -307,7 +305,7 @@ else:
                 stopwords=generate_stopwords()
 
                 text = " ".join(review for review in req_df.Message)
-                wordcloud = WordCloud(stopwords=stopwords, background_color="black").generate(text)
+                wordcloud = WordCloud(stopwords=stopwords, background_color="white").generate(text)
                 plt.figure(figsize=(7, 5))
                 plt.title("Most Used Words")
                 plt.imshow(wordcloud, interpolation='bilinear')
@@ -381,63 +379,67 @@ else:
                 st_echarts(timeline_options)
 
 
+
                 #Media breakdown
 
-                media_breakdown_df=media["Message"].value_counts()
-                media_breakdown_df=pd.DataFrame(media_breakdown_df)
-                media_breakdown_df.reset_index(inplace=True)
-                media_breakdown_df['index'] = media_breakdown_df['index'].str.replace(' omitted','')
-                media_breakdown_df['index'] = media_breakdown_df['index'].str.replace('image','Image')
-                media_breakdown_df['index'] = media_breakdown_df['index'].str.replace('video','Video')
-                media_breakdown_df['index'] = media_breakdown_df['index'].str.replace('audio','Audio')
-                media_breakdown_df['index'] = media_breakdown_df['index'].str.replace('sticker','Sticker')
-                media_breakdown_df['index'] = media_breakdown_df['index'].str.replace(r'[\s\S]*(document)[\s\S]*','PDF',regex=True)
-                media_breakdown_df=media_breakdown_df.groupby("index").sum()
-                media_breakdown_df.reset_index(inplace=True)
-                media_breakdown_df.columns=["Media Type", "Count"]
-                media_breakdown_df.sort_values('Count',inplace=True, ascending=False)
+                if device == 'android':
+                    pass
+                else:
+                    media_breakdown_df=media["Message"].value_counts()
+                    media_breakdown_df=pd.DataFrame(media_breakdown_df)
+                    media_breakdown_df.reset_index(inplace=True)
+                    media_breakdown_df['index'] = media_breakdown_df['index'].str.replace(' omitted','')
+                    media_breakdown_df['index'] = media_breakdown_df['index'].str.replace('image','Image')
+                    media_breakdown_df['index'] = media_breakdown_df['index'].str.replace('video','Video')
+                    media_breakdown_df['index'] = media_breakdown_df['index'].str.replace('audio','Audio')
+                    media_breakdown_df['index'] = media_breakdown_df['index'].str.replace('sticker','Sticker')
+                    media_breakdown_df['index'] = media_breakdown_df['index'].str.replace(r'[\s\S]*(document)[\s\S]*','PDF',regex=True)
+                    media_breakdown_df=media_breakdown_df.groupby("index").sum()
+                    media_breakdown_df.reset_index(inplace=True)
+                    media_breakdown_df.columns=["Media Type", "Count"]
+                    media_breakdown_df.sort_values('Count',inplace=True, ascending=False)
 
 
 
-                media_breakdown_options = {
-                    "title": {
-                        "text": 'Media Sent Breakdown',
-                        "left": "center",
+                    media_breakdown_options = {
+                        "title": {
+                            "text": 'Media Sent Breakdown',
+                            "left": "center",
+                            },
+                        "tooltip": {
+                            "trigger": "axis",
+                            "axisPointer": {"type": "shadow"},
                         },
-                    "tooltip": {
-                        "trigger": "axis",
-                        "axisPointer": {"type": "shadow"},
-                    },
-                    "grid": {
-                        "bottom": "90"},
-                    "xAxis": [
-                        {
-                        "type": "category",
-                        "data": media_breakdown_df["Media Type"].values.tolist(),
-                        "axisPointer": {"type": "shadow"},
-                        "show": "True",
-                        "axisLabel": {
-                            "interval": 0
-                    },
+                        "grid": {
+                            "bottom": "90"},
+                        "xAxis": [
+                            {
+                            "type": "category",
+                            "data": media_breakdown_df["Media Type"].values.tolist(),
+                            "axisPointer": {"type": "shadow"},
+                            "show": "True",
+                            "axisLabel": {
+                                "interval": 0
                         },
-                    ],
-                    "yAxis": [
-                        {
-                            "show" : "false",
-                            "type": "value",
-                        },
-                    ],
-                    "series": [
-                        {
-                            "name": "Count",
-                            "type": "bar",
-                            "large" : "false",
-                            "data": media_breakdown_df["Count"].values.tolist(),
-                        },
-                    ],
-                }
-                st.markdown("---")
-                st_echarts(media_breakdown_options)
+                            },
+                        ],
+                        "yAxis": [
+                            {
+                                "show" : "false",
+                                "type": "value",
+                            },
+                        ],
+                        "series": [
+                            {
+                                "name": "Count",
+                                "type": "bar",
+                                "large" : "false",
+                                "data": media_breakdown_df["Count"].values.tolist(),
+                            },
+                        ],
+                    }
+                    st.markdown("---")
+                    st_echarts(media_breakdown_options)
 
 
 
@@ -499,9 +501,22 @@ else:
                 hour=pd.DataFrame(hour_series)
 
                 messages_radar_df=req_df
-                messages_radar_df["Time"].replace(to_replace=r'[\D]*:[\s\S]*AM', value=" AM", regex=True, inplace=True)
-                messages_radar_df["Time"].replace(to_replace=r'[\D]*:[\s\S]*PM', value=" PM", regex=True, inplace=True)
+                messages_radar_df=messages_radar_df.drop("time_filter", axis=1)
+                if device== "android":
+                    messages_radar_df["Time"]=pd.to_datetime(messages_radar_df["Time"])
+                    messages_radar_df["Time"]=messages_radar_df["Time"].dt.strftime("%I %p")
+
+                if device == "ios":
+                    messages_radar_df["Time"].replace(to_replace=r'[\D]*:[\s\S]*AM', value=" AM", regex=True, inplace=True)
+                    messages_radar_df["Time"].replace(to_replace=r'[\D]*:[\s\S]*PM', value=" PM", regex=True, inplace=True)
+
                 messages_radar_df["Time"]=messages_radar_df["Time"].astype(str)
+                for i in range (0,messages_radar_df["Time"].shape[0]):
+                    string=messages_radar_df["Time"].iloc[i]
+                    first_char=string[0]
+                    if first_char == "0":
+                        messages_radar_df["Time"].replace(to_replace=r'^0', value="", regex=True, inplace=True)
+
                 messages_radar_df["Time"]=messages_radar_df['Time'].str.strip()
                 messages_radar_df["Message_Count"]=1
                 messages_radar_df=messages_radar_df.groupby("Time").sum()
@@ -518,6 +533,7 @@ else:
                         dummy_time = dummy_time.reset_index(drop=True)
                         messages_radar_df["Time"]=dummy_time
                 messages_radar_df['rank'] =messages_radar_df['Time'].str.strip().map(hour_rank)
+
                 messages_radar_df['rank']=messages_radar_df["rank"].astype(int)
                 messages_radar_df.sort_values('rank',inplace=True)
                 messages_radar_df.set_index('rank', inplace=True, drop=True)
@@ -527,9 +543,22 @@ else:
 
 
                 media_radar_df=media
-                media_radar_df["Time"].replace(to_replace=r'[\D]*:[\s\S]*AM', value=" AM", regex=True, inplace=True)
-                media_radar_df["Time"].replace(to_replace=r'[\D]*:[\s\S]*PM', value=" PM", regex=True, inplace=True)
-                media_radar_df["Time"]=media_radar_df["Time"].astype(str)
+
+                media_radar_df = media_radar_df.drop("time_filter", axis=1)
+                if device == "android":
+                    media_radar_df["Time"] = pd.to_datetime(media_radar_df["Time"])
+                    media_radar_df["Time"] = media_radar_df["Time"].dt.strftime("%I %p")
+
+                if device == "ios":
+                    media_radar_df["Time"].replace(to_replace=r'[\D]*:[\s\S]*AM', value=" AM", regex=True,inplace=True)
+                    media_radar_df["Time"].replace(to_replace=r'[\D]*:[\s\S]*PM', value=" PM", regex=True, inplace=True)
+
+                media_radar_df["Time"] = media_radar_df["Time"].astype(str)
+                for i in range(0, media_radar_df["Time"].shape[0]):
+                    string = media_radar_df["Time"].iloc[i]
+                    first_char = string[0]
+                    if first_char == "0":
+                        media_radar_df["Time"].replace(to_replace=r'^0', value="", regex=True, inplace=True)
                 media_radar_df["Time"]=media_radar_df['Time'].str.strip()
                 media_radar_df["Media_Count"]=1
                 media_radar_df=media_radar_df.groupby("Time").sum().drop("urlcount", axis=1)
@@ -754,18 +783,17 @@ st.sidebar.markdown("---")
 
 st.sidebar.subheader('**FAQs**')
 st.sidebar.markdown('**How to export chat text file? (Not Available on Whatsapp Web)**')
-st.sidebar.text('Follow the steps 👇:')
-st.sidebar.text('1) Open the individual or group chat.')
-st.sidebar.text('2) Tap options > More > Export chat.')
-st.sidebar.text('3) Choose export without media.')
-st.sidebar.text('4) Unzip the file and you are all set to go 😃.')
+st.sidebar.markdown('Follow the steps 👇:')
+st.sidebar.markdown('1) Open the individual or group chat.')
+st.sidebar.markdown('2) Tap options > More > Export chat.')
+st.sidebar.markdown('3) Choose export without media.')
+st.sidebar.markdown('4) Unzip the file and you are all set to go 😃.')
 st.sidebar.markdown('**What happens to my data?**')
 st.sidebar.markdown('The data you upload is not saved anywhere on this site or any 3rd party site i.e, not in any storage like DB/FileSystem/Logs.')
 st.sidebar.markdown('**What mobile OS are supported?**')
 st.sidebar.markdown('Both iOS and Android are supported.')
 st.sidebar.markdown('**What languages are supported?**')
-st.sidebar.markdown('🇬🇧 English')
-st.sidebar.markdown('🇮🇹 Italian')
+st.sidebar.markdown('🇬🇧 English  \n🇮🇹 Italian')
 
 st.sidebar.markdown("---")
 
