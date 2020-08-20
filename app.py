@@ -19,14 +19,13 @@ reset=st.sidebar.button("New Analysis")
 
 st.sidebar.subheader("Upload your Whatsapp Chat File")
 chat_file = st.sidebar.file_uploader("File must be .txt format", type="txt")
-
 if reset:
     chat_file= None
 #DATA TRANSFORMATION
 
 
 if chat_file == None:
-    st.header("Welcome to the Whatsapp Chat Analyzer")
+    st.header("Welcome to the Whatsapp Chat Analyzer (Beta)")
     st.write("This app allows you to analyze your WhatsApp Group Chats - follow the steps below to start the analysis👇")
 
     st.subheader("Step 1")
@@ -52,13 +51,14 @@ else:
         @st.cache(allow_output_mutation=True)
         @st.cache
         def transform_data(chat_file):
-            URLPATTERN = r'(https?://\S+)'
 
             parsedData = []
+            # pattern = '^([0-9]+)(\/)([0-9]+)(\/)([0-9]+), ([0-9]+):([0-9]+)[ ]?(AM|PM|am|pm)? -'
+            device = None
+            lines = chat_file.readlines(500)
+            lines=pd.Series(lines)
 
-            device = ''
-            first = chat_file.readline()
-            if '[' in first:
+            if ('[' in lines[0]) or ('[' in lines[1]):
                 device = 'ios'
             else:
                 device = "android"
@@ -154,6 +154,7 @@ else:
 
 
             st.markdown("---")
+
 
 
             #WIDGETS
@@ -804,3 +805,21 @@ st.sidebar.markdown("Made with ❤️ by [![Stefano Cantù]\
 
 
 
+########SENTIMENT
+
+# from textblob import TextBlob
+#
+# text=req_df["Message"].astype(str).reset_index(drop=True)
+# st.write(text)
+#
+#
+# if st.button("Analyze"):
+#     for i in range(1,(text.shape[0])):
+#
+#         blob=TextBlob(str(text[:i]))
+#
+#         result_sentiment=blob.sentiment
+#         result_assessment=blob.sentiment_assessments
+#
+#         st.json(result_sentiment)
+#
