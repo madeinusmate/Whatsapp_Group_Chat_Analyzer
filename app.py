@@ -8,6 +8,7 @@ import streamlit as st
 from stop_words import get_stop_words
 from streamlit_echarts import st_echarts
 from wordcloud import WordCloud
+from langdetect import detect
 
 from Services import Services
 
