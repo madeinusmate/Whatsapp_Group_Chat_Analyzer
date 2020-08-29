@@ -28,6 +28,7 @@ class Services:
         lines = str(chat_file.getvalue())
         patterns = [
             '‎[\s\S]*(image omitted)[\s\S]',
+            '‎[\s\S]*(<Media omitted>)[\s\S]',
             '[\s\S]*(video omitted)[\s\S]',
             '[\s\S]*(GIF omitted)[\s\S]',
             '[\s\S]*(audio omitted)[\s\S]',
@@ -55,9 +56,10 @@ class Services:
     def FindAuthor(s):
         patterns = [
             '([\w]+):',  # First Name
-            '([\w]+[\s]+[\w]+):',  # First Name + Last Name
+            '([\w]+[\s]+[\w]+):', # First Name + Last Name
+            '([\w]+[\s]+[\w]+[\s]+[\w]+):', # First Name + Middle Name + Last Name
             '([\s\S]+[+]*[\d]{2}[\s]+[\d]{3}[\s]+[\d]{3}[\s]+[\d]{4}[\D]+):',  # Mobile Number (IT)
-            '([\w]+)[\u263a-\U0001f999]+:',
+            '([\w]+)[\u263a-\U0001f999]+:', #  Name + emoji
         ]
         pattern = '^' + '|'.join(patterns)
         result = re.match(pattern, s)

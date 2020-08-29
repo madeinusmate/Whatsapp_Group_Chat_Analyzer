@@ -216,7 +216,7 @@ else:
                     chat_name['Text'] = chat_name['Text'].str.replace(r'^[\W]+', '', regex=True)
                     chat_name['Text'] = chat_name['Text'].str.replace(r'[\W]+$', '', regex=True)
                     chat_name = chat_name.tail(1)
-                else:
+                if export_language=="ENG":
                     chat_name = chat_name[chat_name["Text"].str.contains("changed the subject to") == True]
                     chat_name['Text'] = chat_name['Text'].str.replace(r'[\s\S]*(changed the subject to)', '', regex=True)
                     chat_name['Text'] = chat_name['Text'].str.replace(r'^[\W]+', '', regex=True)
@@ -458,9 +458,7 @@ else:
                         media_breakdown_df['index'] = media_breakdown_df['index'].str.replace(' non incluso', '')
                         media_breakdown_df['index'] = media_breakdown_df['index'].str.replace('immagine', 'Immagine')
                         media_breakdown_df['index'] = media_breakdown_df['index'].str.replace('Scheda contatto', 'Contatto')
-
-
-                    else:
+                    if export_language == "ENG":
                         media_breakdown_df['index'] = media_breakdown_df['index'].str.replace(' omitted','')
                     media_breakdown_df['index'] = media_breakdown_df['index'].str.replace('image','Image')
                     media_breakdown_df['index'] = media_breakdown_df['index'].str.replace('video','Video')
